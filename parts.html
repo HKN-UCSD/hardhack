@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="Lucas Tindall">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>HARD Hack Parts</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/signin.css" rel="stylesheet">
+
+    <link href="css/main.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div id="wrapperHeader">
+      <div id="header">
+        <img src="hknLogo.png" width="400" height="91" alt="logo" />
+      </div>
+    </div>
+    <div class="container">
+
+      <form class="form-signin" id="partform">
+        <h2 class="form-signin-heading">HARD Hack Parts</h2>
+
+        <label for="groupName" class="sr-only">Group Name</label>
+        <select class="form-control" id="groupName" name="groupName" required autofocus>
+          <option selected disabled value="">Choose team</option> 
+        </select>
+        <label for="partName" class="sr-only">Part Name</label>
+        <select class="form-control" id="partName" name="partName" required >
+          <option selected disabled value="">Choose part</option> 
+        </select>
+        <label for="partCount" class="sr-only">Number of parts</label>
+        <input type="number" id="partCount" name="partCount" class="form-control" placeholder="Number of parts" required>
+
+        <div class="form-check">
+        <label class="form-check-label">
+            <input type="radio" class="form-check-input" name="checkOption" id="optionsRadios2" value="checkout" checked>
+          Check Out</label>
+        </div>
+        <div class="form-check">
+          <label class="form-check-label">
+            <input type="radio" class="form-check-input" name="checkOption" id="optionRadio1" value="checkin" >
+          Check In</label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" id="submitPart">Submit</button>
+      </form>
+
+      <div class="row form-signin">
+        <div id="reset">
+        </div>
+        <div id="partMessage">
+        </div>
+      </div>
+    </div> <!-- /container -->
+    <footer class="footer">
+      <div class="centerText">
+        &copy Lucas Tindall 2016
+      </div>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+          $.get("/get_groups", function(groups){ 
+            console.log(groups); 
+            for( var i = 0; i < groups.length; i++){ 
+              $("#groupName").append('<option value="'+groups[i]+'">'+groups[i]+'</option>'); 
+            } 
+          }); 
+
+          $.get("/get_parts", function(parts){ 
+
+            for( var i = 0; i < parts.length; i++){ 
+              $("#partName").append('<option value="'+parts[i]+'">'+parts[i]+'</option>'); 
+            } 
+
+          }); 
+
+          $("input").keypress(function(e) { 
+            if(event.which == 13 && $("#partMessage").length){ 
+              e.preventDefault(); 
+              window.location.replace("http://159.203.253.157:5555/parts"); 
+            } 
+          }); 
+
+          $('#partform').on('submit', function(e) { 
+            e.preventDefault(); 
+
+            if($('#partMessage').length){ 
+              console.log("submitting form again"); 
+              //window.location.replace("http://google.com"); 
+              //window.location.replace("http://159.203.253.157:5555/parts"); 
+            } 
+
+            $.ajax({
+              url: '/process_part', 
+              type: 'POST', 
+              data: $( '#partform' ).serialize(), 
+              success: function(message){
+                console.log("got message for parts"); 
+                $( "#partMessage" ).append(message); 
+                $('#submitPart').remove(); 
+                $('#partform').append('<a href="/parts" class="btn btn-lg btn-block btn-info" role="button" >Reset</a>'); 
+              }
+            });
+          }); 
+          /*
+          $( "#signin" ).click(function() { 
+            $.ajax({
+              url: '/process_signin', 
+              type: 'POST', 
+              data: $( '#signinform' ).serialize(), 
+              success: function(message){
+                console.log(message); 
+                $( "#partMessage" ).append(message); 
+              }
+            });
+          });  
+          */
+          /*
+          $.get("/login_status", function(loginObject) {
+            if(loginObject != null && loginObject.loginStatus != null){
+              if(loginObject.loginStatus == false){ 
+                //document.getElementById("loginMessage").innerHTML=loginObject.loginStatus;
+                console.log("appending message"); 
+                $("#loginMessage").append(loginObject.loginMessage); 
+              } 
+              else{
+                console.log("rerouting to buy"); 
+                window.location.replace(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+"/buy.html"); 
+              } 
+            } 
+            console.log(loginObject); 
+          }); 
+
+          $.get("/leaderDebt", function(leaderDebtMessage) { 
+            $("#leaderDebt").append(leaderDebtMessage); 
+            
+          }); 
+          $.get("/leaderCredit", function(leaderCreditMessage) { 
+            $("#leaderCredit").append(leaderCreditMessage); 
+            
+          }); 
+
+          $(document).on("click", "#createUser", function(){
+              window.location.replace(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+"/register");
+          }); 
+          */
+        });
+    </script> 
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <!--
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+    -->
+  </body>
+</html>
